@@ -26,7 +26,7 @@ import { Todo } from './todo/todo.entity';
       port: configuration().database.port,  
       username: configuration().database.user,
       password: configuration().database.pass,
-      database: 'test',
+      database: configuration().database.name,
       synchronize: true, // set to false in prod
       entities: [User, Todo],
     }),
