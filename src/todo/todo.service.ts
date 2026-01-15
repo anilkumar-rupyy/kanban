@@ -11,8 +11,11 @@ export class TodoService {
         private todoRepo: Repository<Todo>,
     ) {}
 
-    createTodo(title: string) {
-        return this.todoRepo.save({ title });
+    createTodo(userId: number, title: string) {
+        return this.todoRepo.save({
+            title,
+            user: { id: userId },
+         });
     }
 
     updateTodo(id: number, title: string) {

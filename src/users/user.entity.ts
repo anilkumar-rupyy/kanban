@@ -8,18 +8,18 @@ export class User {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({ nullable: false })
     name: string;
 
-    @Column()
+    @Column({ nullable: false, unique: true })
     email: string;
 
-    @Column()
+    @Column({ nullable: false })
     pass: string;
 
     @CreateDateColumn()
     createdAt: Date;
 
-    @OneToMany(() => Todo, todo => todo.user)
+    @OneToMany(() => Todo, todo => todo.user, {onDelete: 'CASCADE'})
     todos: Todo[];
 }

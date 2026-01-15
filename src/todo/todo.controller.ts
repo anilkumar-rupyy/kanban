@@ -8,8 +8,8 @@ export class TodoController {
 
     @UseGuards(JwtAuthGuard)
     @Post()
-    createTodo(@Body('title') title: string) {
-        return this.todoService.createTodo(title);
+    createTodo(@Body() { title, userId }: { title: string; userId: number }) {
+        return this.todoService.createTodo(userId, title);
     }
 
     @UseGuards(JwtAuthGuard)
