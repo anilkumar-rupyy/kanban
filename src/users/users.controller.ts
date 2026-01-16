@@ -10,8 +10,8 @@ export class UsersController {
     constructor(private readonly usersService: UsersService) {}
 
     @Post()
-    createUser(@Body() craeteUserDTO: CreateUserDTO) {
-        return this.usersService.createUser(craeteUserDTO);
+    createUser(@Body() createUserDTO: CreateUserDTO) {
+        return this.usersService.createUser(createUserDTO);
     }
 
     @Get(':id')

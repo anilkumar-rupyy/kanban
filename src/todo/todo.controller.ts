@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Put, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, ForbiddenException, Get, NotFoundException, Param, Patch, Post, Put, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { TodoService } from './todo.service';
 import { GetUser } from 'src/auth/get-user.decorator';
@@ -31,8 +31,8 @@ export class TodoController {
 
     @UseGuards(JwtAuthGuard)
     @Get()
-    getTodosForUser(@Req() req) {
-        return this.todoService.getTodosForUser(req.user.id);
+    getTodosForUser(@GetUser() user: {userId: number; email: string}) {
+        return this.todoService.getTodosForUser(user.userId);
     }
 
     @UseGuards(JwtAuthGuard)
@@ -44,7 +44,7 @@ export class TodoController {
     @UseGuards(JwtAuthGuard)
     @Patch(':id')
     updateTodoStatus(
-        @Body('id') id: number,
+        @Param(':id') id: number,
         @Body('completed') completed: boolean,
     ) {
         return this.todoService.updateCompletionStatus(id, completed);
@@ -61,7 +61,20 @@ export class TodoController {
 
     @UseGuards(JwtAuthGuard)
     @Delete(':id')
-    deleteTodo(@Param('id') id: number) {
-        return this.todoService.deleteTodo(id);
+    async deleteTodo(@GetUser() user: {userId: number; email: string}, @Param('id') id: number) {
+        try {
+            if (!user.userId) {
+                throw new UnauthorizedException('User not authorized');
+            }
+
+            const todo = await this.todoService.getTodoById(id);
+            if (todo.user.id !== user.userId) {
+                throw new ForbiddenException('User not authorized to delete this todo');
+            }
+
+            return this.todoService.deleteTodo(id);
+        } catch (error) {
+            throw error;
+        }
     }
 }
