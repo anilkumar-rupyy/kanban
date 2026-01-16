@@ -1,6 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Put, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { TodoService } from './todo.service';
+import { GetUser } from 'src/auth/get-user.decorator';
 
 @Controller('todo')
 export class TodoController {
@@ -8,8 +9,18 @@ export class TodoController {
 
     @UseGuards(JwtAuthGuard)
     @Post()
-    createTodo(@Body() { title, userId }: { title: string; userId: number }) {
-        return this.todoService.createTodo(userId, title);
+    createTodo(@GetUser() user: {userId: number; email: string}, @Body() { title }: { title: string }) {
+        try {
+            // get user id from authorization token 
+            const userId = user.userId;
+            if (!userId) {
+                throw new NotFoundException('User not authorized');
+            }
+
+            return this.todoService.createTodo(userId, title);
+        } catch (error) {
+            throw error;
+        }
     }
 
     @UseGuards(JwtAuthGuard)

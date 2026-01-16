@@ -11,32 +11,95 @@ export class TodoService {
         private todoRepo: Repository<Todo>,
     ) {}
 
-    createTodo(userId: number, title: string) {
-        return this.todoRepo.save({
-            title,
-            user: { id: userId },
-         });
+    async createTodo(userId: number, title: string) {
+        try {
+            const todo = this.todoRepo.create({ title, user: { id: userId } });
+            if (!todo) {
+                throw new Error('Todo creation failed');
+            }
+
+            const savedTodo = await this.todoRepo.save(todo);
+            if (!savedTodo) {
+                throw new Error('Saving todo failed');
+            }
+            
+            return savedTodo;
+        } catch (error) {
+            throw error;
+        }
     }
 
-    updateTodo(id: number, title: string) {
-        return this.todoRepo.update(id, { title });
+    async updateTodo(id: number, title: string) {
+        try {
+            const todo = await this.todoRepo.findOne({ where: { id } });
+            if (!todo) {
+                throw new Error('Todo not found');
+            }
+            
+            const updated = await this.todoRepo.update(id, { title });
+            return updated;
+        } catch (error) {
+            throw error;
+        }
     }
 
-    deleteTodo(id: number) {
-        return this.todoRepo.delete(id);
+    async deleteTodo(id: number) {
+        try {
+            const todo = await this.todoRepo.findOne({ where: { id } });
+            if(!todo) {
+                throw new Error('Todo not found');
+            }
+
+            const deletedStatus = await this.todoRepo.delete(id);
+            if (!deletedStatus) {
+                throw new Error('Todo deletion failed');
+            }
+            
+            return deletedStatus;
+        } catch (error) {
+            throw error;
+        }
     }
 
-    updateCompletionStatus(id: number, completed: boolean) {
-        return this.todoRepo.update(id, { completed });
+    async updateCompletionStatus(id: number, completed: boolean) {
+        try {
+            const todo = await this.todoRepo.findOne({ where: { id } });
+            if (!todo) {
+                throw new Error('Todo not found');
+            }
+
+            const updatedResult = await this.todoRepo.update(id, { completed });
+            if (!updatedResult) {
+                throw new Error('Updating todo status failed');
+            }
+
+            return updatedResult;
+        } catch (error) {
+            throw error;
+        }
     }
 
 
-    getTodosForUser(userId: number) {
-        return this.todoRepo.find({ where: { user: { id: userId } } });
+    async getTodosForUser(userId: number) {
+        try {
+            const todos = await this.todoRepo.find({ where: { user: { id: userId } } });
+            return todos;
+        } catch (error) {
+            throw error;
+        }
     }
 
 
-    getTodoById(id: number) {
-        return this.todoRepo.findOne({ where: { id } });
+    async getTodoById(id: number) {
+        try {
+            const todo = await this.todoRepo.findOne({ where: { id } });
+            if(!todo) {
+                throw new Error('Todo not found');
+            }
+
+            return todo;
+        } catch (error) {
+            throw error;
+        }
     }
 }

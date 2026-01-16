@@ -12,12 +12,25 @@ export class UsersService {
     ) {}
 
     createUser(createUserDTO: CreateUserDTO){
-        const user = this.usersRepo.create(createUserDTO);
-        return this.usersRepo.save(user);
+        try {
+            const user = this.usersRepo.create(createUserDTO);
+            if (!user) {
+                throw new Error('User creation failed');
+            }
+
+            return this.usersRepo.save(user);
+        } catch (error) {
+            throw error;
+        }
     }
-    
-    findByEmail(email: string) {
-        return this.usersRepo.findOne({ where: { email } });
+
+    async findByEmail(email: string) {
+        try {
+            const user = await this.usersRepo.findOne({ where: { email } });
+            return user;
+        } catch (error) {
+            throw error;
+        }
     }
 
     findById(id: number) {
