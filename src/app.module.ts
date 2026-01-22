@@ -13,6 +13,7 @@ import { User } from './users/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import configuration from './config/configuration';
 import { Todo } from './todo/todo.entity';
+import { ObservabilityModule } from './observability/observability.module';
 
 @Module({
   imports: [
@@ -32,7 +33,8 @@ import { Todo } from './todo/todo.entity';
     }),
     AuthModule, 
     UsersModule, 
-    TodoModule
+    TodoModule,
+    ObservabilityModule
   ],
   controllers: [AppController, AuthController, UsersController, TodoController],
   providers: [AppService, AuthService],
