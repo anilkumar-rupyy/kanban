@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { LoggingInterceptor } from 'src/observability/logging.interceptor';
-import { AppLogger } from './app-logger/app-logger.service';
+import { AppLogger } from './logger/app-logger.service';
 
 @Module({
     providers: [
@@ -9,7 +9,7 @@ import { AppLogger } from './app-logger/app-logger.service';
             provide: APP_INTERCEPTOR,
             useClass: LoggingInterceptor,
         },
-        
+        AppLogger,
     ],
     exports: [AppLogger]
 })

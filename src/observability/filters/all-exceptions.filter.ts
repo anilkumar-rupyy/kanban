@@ -1,5 +1,5 @@
 import { ArgumentsHost, ExceptionFilter, HttpException, Injectable } from "@nestjs/common";
-import { AppLogger } from "../app-logger/app-logger.service";
+import { AppLogger } from "../logger/app-logger.service";
 
 
 @Injectable()

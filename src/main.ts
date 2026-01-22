@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { LoggingInterceptor } from './observability/logging.interceptor';
-import { AppLogger } from './observability/app-logger/app-logger.service';
+import { AppLogger } from './observability/logger/app-logger.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

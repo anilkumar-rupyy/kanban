@@ -44,7 +44,7 @@ export class TodoController {
     @UseGuards(JwtAuthGuard)
     @Patch(':id')
     updateTodoStatus(
-        @Param(':id') id: number,
+        @Param('id') id: number,
         @Body('completed') completed: boolean,
     ) {
         return this.todoService.updateCompletionStatus(id, completed);
@@ -53,7 +53,7 @@ export class TodoController {
     @UseGuards(JwtAuthGuard)
     @Put(':id')
     updateTodo(
-        @Body('id') id: number,
+        @Param('id') id: number,
         @Body('title') title: string,
     ) {
         return this.todoService.updateTodo(id, title);
