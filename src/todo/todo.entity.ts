@@ -11,8 +11,8 @@ export class Todo {
     @Column()
     title: string;
 
-    @ManyToOne(() => User, user => user.todos, { onDelete: 'CASCADE' })
-    user: User;
+    @Column()
+    userId: number;
 
     @Column({ default: false })
     completed: boolean;

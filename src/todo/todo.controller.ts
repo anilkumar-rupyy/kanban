@@ -2,6 +2,7 @@ import { Body, Controller, Delete, ForbiddenException, Get, NotFoundException, P
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { TodoService } from './todo.service';
 import { GetUser } from 'src/auth/get-user.decorator';
+import { Todo } from './todo.entity';
 
 @Controller('todo')
 export class TodoController {
@@ -67,8 +68,9 @@ export class TodoController {
                 throw new UnauthorizedException('User not authorized');
             }
 
-            const todo = await this.todoService.getTodoById(id);
-            if (todo.user.id !== user.userId) {
+            const todo: Todo = await this.todoService.getTodoById(id);
+            console.log("deleteTodo - todo:", todo);
+            if (todo.userId !== user.userId) {
                 throw new ForbiddenException('User not authorized to delete this todo');
             }
 

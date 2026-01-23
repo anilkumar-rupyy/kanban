@@ -14,6 +14,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import configuration from './config/configuration';
 import { Todo } from './todo/todo.entity';
 import { ObservabilityModule } from './observability/observability.module';
+import { ThrottlerGuard } from "@nestjs/throttler";
+import { ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -31,12 +34,31 @@ import { ObservabilityModule } from './observability/observability.module';
       synchronize: true, // set to false in prod
       entities: [User, Todo],
     }),
+    ThrottlerModule.forRoot([
+      {
+        name: 'short',
+        ttl: 1000,
+        limit: 3,
+      },
+      {
+        name: 'medium',
+        ttl: 10000,
+        limit: 20,
+      },
+    ]),
     AuthModule, 
     UsersModule, 
     TodoModule,
     ObservabilityModule
   ],
   controllers: [AppController, AuthController, UsersController, TodoController],
-  providers: [AppService, AuthService],
+  providers: [
+    AppService, 
+    AuthService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    }
+  ],
 })
 export class AppModule {}

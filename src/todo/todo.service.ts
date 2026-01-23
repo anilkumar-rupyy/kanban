@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Todo } from './todo.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -9,11 +9,11 @@ export class TodoService {
     constructor(
         @InjectRepository(Todo)
         private todoRepo: Repository<Todo>,
-    ) {}
+    ) { }
 
     async createTodo(userId: number, title: string) {
         try {
-            const todo = this.todoRepo.create({ title, user: { id: userId } });
+            const todo = this.todoRepo.create({ title, userId });
             if (!todo) {
                 throw new Error('Todo creation failed');
             }
@@ -22,7 +22,7 @@ export class TodoService {
             if (!savedTodo) {
                 throw new Error('Saving todo failed');
             }
-            
+
             return savedTodo;
         } catch (error) {
             throw error;
@@ -31,11 +31,11 @@ export class TodoService {
 
     async updateTodo(id: number, title: string) {
         try {
-            const todo = await this.todoRepo.findOne({ where: { id } });
+            const todo = await this.todoRepo.findOne({ where: { id }, relations: ['user'] });
             if (!todo) {
                 throw new Error('Todo not found');
             }
-            
+
             const updated = await this.todoRepo.update(id, { title });
             return updated;
         } catch (error) {
@@ -46,7 +46,7 @@ export class TodoService {
     async deleteTodo(id: number) {
         try {
             const todo = await this.todoRepo.findOne({ where: { id } });
-            if(!todo) {
+            if (!todo) {
                 throw new Error('Todo not found');
             }
 
@@ -54,7 +54,7 @@ export class TodoService {
             if (!deletedStatus) {
                 throw new Error('Todo deletion failed');
             }
-            
+
             return deletedStatus;
         } catch (error) {
             throw error;
@@ -63,7 +63,7 @@ export class TodoService {
 
     async updateCompletionStatus(id: number, completed: boolean) {
         try {
-            const todo = await this.todoRepo.findOne({ where: { id } });
+            const todo = await this.todoRepo.findOne({ where: { id }, relations: ['user'] });
             if (!todo) {
                 throw new Error('Todo not found');
             }
@@ -82,7 +82,7 @@ export class TodoService {
 
     async getTodosForUser(userId: number) {
         try {
-            const todos = await this.todoRepo.find({ where: { user: { id: userId } } });
+            const todos = await this.todoRepo.find({ where: { userId } });
             return todos;
         } catch (error) {
             throw error;
@@ -90,13 +90,16 @@ export class TodoService {
     }
 
 
-    async getTodoById(id: number) {
+    async getTodoById(id: number): Promise<Todo> {
         try {
-            const todo = await this.todoRepo.findOne({ where: { id } });
-            if(!todo) {
+            const todo = await this.todoRepo.findOne({
+                where: { id }
+            });
+            if (!todo) {
                 throw new Error('Todo not found');
             }
 
+            console.log("getTodoById - todo:", todo);
             return todo;
         } catch (error) {
             throw error;

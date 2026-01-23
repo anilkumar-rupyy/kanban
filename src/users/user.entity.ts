@@ -20,6 +20,6 @@ export class User {
     @CreateDateColumn()
     createdAt: Date;
 
-    @OneToMany(() => Todo, todo => todo.user, {onDelete: 'CASCADE'})
+    @OneToMany(() => Todo, todo => todo.userId, {onDelete: 'CASCADE'})
     todos: Todo[];
 }
